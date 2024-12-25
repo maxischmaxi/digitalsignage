@@ -1,0 +1,19 @@
+{
+  "PickOrgModal": {
+    "title": "Organisation auswählen",
+    "description": "Bitte wählen Sie eine Organisation aus, um fortzufahren."
+  },
+  "NavBreadcrumbs": {
+    "signage": "Signage",
+    "displays": "Displays",
+    "layouts": "Layouts",
+    "timeline": "Timeline",
+    "images": "Bilder",
+    "gallery": "Galerie",
+    "home": "Startseite"
+  },
+  "OrgSwitcher": {
+    "addOrganization": "Organisation hinzufügen",
+    "organization": "Organisation"
+  }
+}
