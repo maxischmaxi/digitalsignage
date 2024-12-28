@@ -1,3 +1,5 @@
+import "./globals.css";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import QueryProvider from "@/components/query-provider";
 import { routing } from "@/i18n/routing";
 import { auth } from "@/lib/auth";
@@ -6,7 +8,11 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
+import { extractRouterConfig } from "uploadthing/server";
+import { digitalsignageFileRouter } from "@/app/api/uploadthing/core";
+import { connection } from "next/server";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,8 +29,18 @@ type Props = {
   children: ReactNode;
 };
 
+async function UTSSR() {
+  await connection();
+  return (
+    <NextSSRPlugin
+      routerConfig={extractRouterConfig(digitalsignageFileRouter)}
+    />
+  );
+}
+
 export default async function Layout({ params, children }: Props) {
   const data = await auth.getSession();
+
   if (!data) {
     notFound();
   }
@@ -43,13 +59,25 @@ export default async function Layout({ params, children }: Props) {
   const messages = await getMessages();
 
   return (
-    <html lang={lng}>
+    <html lang={lng} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
           <Auth0Provider>
-            <QueryProvider>{children}</QueryProvider>
+            <QueryProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Suspense>
+                  <UTSSR />
+                </Suspense>
+                {children}
+              </ThemeProvider>
+            </QueryProvider>
           </Auth0Provider>
         </NextIntlClientProvider>
       </body>

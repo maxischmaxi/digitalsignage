@@ -6,7 +6,9 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  Moon,
   Sparkles,
+  Sun,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,10 +30,12 @@ import {
 import Link from "next/link";
 import { useUser } from "@auth0/nextjs-auth0";
 import { useMemo } from "react";
+import { useTheme } from "next-themes";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user } = useUser();
+  const { theme, setTheme } = useTheme();
 
   const initials = useMemo(() => {
     if (!user) return null;
@@ -49,6 +53,30 @@ export function NavUser() {
 
     return null;
   }, [user]);
+
+  function toggleTheme() {
+    if (!theme) {
+      setTheme("system");
+      return;
+    }
+
+    if (theme === "system") {
+      setTheme("dark");
+      return;
+    }
+
+    if (theme === "dark") {
+      setTheme("light");
+      return;
+    }
+
+    if (theme === "light") {
+      setTheme("system");
+      return;
+    }
+
+    setTheme("system");
+  }
 
   if (!user) {
     return (
@@ -109,6 +137,17 @@ export function NavUser() {
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={toggleTheme}>
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+                {theme === "system" && "System"}
+                {theme === "light" && "Light"}
+                {theme === "dark" && "Dark"}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

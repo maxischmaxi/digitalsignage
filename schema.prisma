@@ -9,55 +9,105 @@ datasource db {
 }
 
 model Display {
-  id          String     @id @default(uuid())
+  id           String      @id @default(uuid())
+  name         String
+  orgId        String?
+  Org          Org?        @relation(fields: [orgId], references: [id])
+  Location     Location    @relation(fields: [locationId], references: [id])
+  locationId   String
+  timeframes   Timeframe[]
+  screenWidth  Int         @default(1920)
+  screenHeight Int         @default(1080)
+}
+
+model Location {
+  id          String    @id @default(uuid())
   name        String
-  Timeframe   Timeframe? @relation(fields: [timeframeId], references: [id])
-  timeframeId String?
+  description String
+  address     String
+  city        String
+  state       String
+  zip         String
+  Display     Display[]
+  Org         Org       @relation(fields: [orgId], references: [id])
+  orgId       String
 }
 
 model Layout {
   id        String      @id @default(uuid())
   name      String
   Timeframe Timeframe[]
+  type      LayoutType
+  data      String?
+  url       String?
+  Org       Org         @relation(fields: [orgId], references: [id])
+  orgId     String
 }
 
 model Timeframe {
-  id        String    @id @default(uuid())
-  layout    Layout    @relation(fields: [layoutId], references: [id])
-  displays  Display[]
+  id        String   @id @default(uuid())
   start     DateTime
   end       DateTime
-  displayId String
   layoutId  String
+  Layout    Layout   @relation(fields: [layoutId], references: [id])
+  Display   Display? @relation(fields: [displayId], references: [id])
+  displayId String?
 }
 
 model User {
-  id          String        @id @default(uuid())
-  email       String        @unique
+  id            String          @id @default(uuid())
+  email         String          @unique
+  currentOrg    String?
+  Orgs          Org[]
+  Media         Media[]
+  UsersOnOrgs   UsersOnOrgs[]
+  OrgPermission OrgPermission[]
+}
+
+model OrgPermission {
+  id          String       @id @default(uuid())
+  org         Org          @relation(fields: [orgId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  orgId       String
+  userId      String
   permissions Permission[]
-  orgs        Org[]
-  currentOrg  String?
-  UsersOnOrgs UsersOnOrgs[]
 }
 
 model Org {
-  id          String        @id @default(uuid())
-  name        String
-  users       User[]
-  plan        Plan
-  icon        String
-  UsersOnOrgs UsersOnOrgs[]
+  id            String          @id @default(uuid())
+  name          String
+  icon          String
+  Plan          Plan
+  Media         Media[]
+  Users         User[]
+  UsersOnOrgs   UsersOnOrgs[]
+  OrgPermission OrgPermission[]
+  Displays      Display[]
+  Location      Location[]
+  Layout        Layout[]
 }
 
 model UsersOnOrgs {
-  user       User     @relation(fields: [userId], references: [id])
   userId     String
-  org        Org      @relation(fields: [orgId], references: [id])
   orgId      String
-  assignedAt DateTime @default(now())
   assignedBy String
+  assignedAt DateTime @default(now())
+  User       User     @relation(fields: [userId], references: [id])
+  Org        Org      @relation(fields: [orgId], references: [id])
 
   @@id([userId, orgId])
+}
+
+model Media {
+  id         String  @id @default(uuid())
+  uploadedBy User    @relation(fields: [userId], references: [id])
+  userId     String
+  Org        Org?    @relation(fields: [orgId], references: [id])
+  orgId      String?
+  name       String
+  key        String
+  size       Float
+  url        String
 }
 
 enum Permission {
@@ -69,6 +119,15 @@ enum Permission {
   MEDIA
   IMAGES_READ
   VIDEOS_READ
+  DELETE_MEDIA
+  LOCATIONS
+}
+
+enum LayoutType {
+  PDF
+  CANVAS
+  IMAGE
+  VIDEO
 }
 
 enum Plan {

@@ -1,29 +1,12 @@
 "use client";
 
-import {
-  BookOpen,
-  ChevronRight,
-  Frame,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-  GalleryVertical,
-} from "lucide-react";
+import { Layout, Map, Monitor, SquareTerminal, Timer } from "lucide-react";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { NavGroup, NavItem } from "@/lib/definitions";
 import { useUser } from "@auth0/nextjs-auth0";
@@ -31,116 +14,48 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { Permission } from "@prisma/client";
 import { Link, usePathname } from "@/i18n/routing";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const groups: NavGroup[] = [
   {
-    title: "Platform",
+    title: "platform",
     permissions: [Permission.PLATFORM],
     items: [
       {
-        title: "Signage",
-        url: "/signage",
-        icon: SquareTerminal,
-        permissions: [Permission.SIGNAGE_READ],
-        items: [
-          {
-            title: "Displays",
-            url: "/displays",
-            permissions: [Permission.DISPLAYS_READ],
-          },
-          {
-            title: "Layouts",
-            url: "/layouts",
-            permissions: [Permission.LAYOUTS_READ],
-          },
-          {
-            title: "Timeline",
-            url: "/timeline",
-            permissions: [Permission.TIMELINE_READ],
-          },
-        ],
+        title: "displays",
+        url: "/displays",
+        permissions: [Permission.DISPLAYS_READ],
+        icon: Monitor,
       },
       {
-        title: "Documentation",
-        url: "/docs",
-        icon: BookOpen,
-        permissions: [],
-        items: [
-          {
-            title: "Introduction",
-            url: "#",
-            permissions: [],
-          },
-          {
-            title: "Get Started",
-            url: "#",
-            permissions: [],
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-            permissions: [],
-          },
-          {
-            title: "Changelog",
-            url: "#",
-            permissions: [],
-          },
-        ],
+        title: "layouts",
+        url: "/layouts",
+        permissions: [Permission.LAYOUTS_READ],
+        icon: Layout,
       },
       {
-        title: "Settings",
-        url: "#",
-        icon: Settings2,
-        permissions: [],
-        items: [
-          {
-            title: "General",
-            url: "#",
-            permissions: [],
-          },
-          {
-            title: "Team",
-            url: "#",
-            permissions: [],
-          },
-          {
-            title: "Billing",
-            url: "#",
-            permissions: [],
-          },
-          {
-            title: "Limits",
-            url: "#",
-            permissions: [],
-          },
-        ],
+        title: "timeline",
+        url: "/timeline",
+        permissions: [Permission.TIMELINE_READ],
+        icon: Timer,
+      },
+      {
+        title: "locations",
+        url: "/locations",
+        permissions: [Permission.LOCATIONS],
+        icon: Map,
       },
     ],
   },
   {
-    title: "Media",
+    title: "media",
     permissions: [Permission.MEDIA],
     items: [
       {
-        title: "Images",
-        url: "/images",
-        icon: Frame,
-        permissions: [Permission.IMAGES_READ],
-        items: [
-          {
-            title: "Gallery",
-            url: "/gallery",
-            permissions: [Permission.IMAGES_READ],
-            icon: GalleryVertical,
-          },
-        ],
-      },
-      {
-        title: "Videos",
-        url: "/videos",
-        icon: PieChart,
-        permissions: [Permission.VIDEOS_READ],
+        title: "media",
+        url: "/media",
+        icon: SquareTerminal,
+        permissions: [Permission.MEDIA],
       },
     ],
   },
@@ -151,6 +66,7 @@ export function NavMain() {
   const { user } = useUser();
   const permissions = usePermissions(user);
   const pathname = usePathname();
+  const t = useTranslations("Nav");
 
   function filterPermission(navItem: NavItem): boolean {
     if (navItem.permissions.length === 0) {
@@ -161,50 +77,24 @@ export function NavMain() {
     );
   }
 
-  const parts = pathname.split("/").filter(Boolean).slice(1);
-
   return (
     <>
       {groups.map((group, index) => (
         <SidebarGroup key={index}>
-          <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t(group.title)}</SidebarGroupLabel>
           <SidebarMenu>
-            {group.items.filter(filterPermission).map((item) => {
-              const isActive = `/${parts[0]}` === item.url;
-
+            {group.items?.filter(filterPermission).map((item) => {
               return (
-                <Collapsible
-                  key={item.title}
+                <SidebarMenuButton
+                  isActive={pathname.includes(item.url)}
                   asChild
-                  defaultOpen={isActive}
-                  className="group/collapsible"
+                  key={item.title}
                 >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={item.title}>
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items?.filter(filterPermission).map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton asChild>
-                              <Link
-                                href={`/${orgId}/${item.url}/${subItem.url}`}
-                              >
-                                {subItem.icon && <subItem.icon />}
-                                <span>{subItem.title}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
+                  <Link href={`/${orgId}/${item.url}`}>
+                    <item.icon />
+                    <span>{t(item.title)}</span>
+                  </Link>
+                </SidebarMenuButton>
               );
             })}
           </SidebarMenu>

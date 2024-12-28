@@ -12,10 +12,6 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return authResponse;
   }
 
-  if (req.nextUrl.pathname.startsWith("/api")) {
-    return NextResponse.next();
-  }
-
   const intlRes = intlMiddleware(req);
 
   for (const [key, value] of authResponse.headers) {
@@ -27,6 +23,6 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!_next/static|api|preview|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

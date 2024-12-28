@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -9,6 +8,9 @@ import {
 } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 import NavBreadcrumbs from "@/components/nav-breadcrumbs";
+import { auth } from "@/lib/auth";
+import { notFound } from "next/navigation";
+import { findUserByEmail, prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,7 +22,42 @@ type Props = {
   children: ReactNode;
 };
 
-export default async function RootLayout({ children }: Props) {
+export default async function RootLayout({ children, params }: Props) {
+  const { orgId } = await params;
+  const data = await auth.getSession();
+
+  if (!data?.user?.email) {
+    notFound();
+  }
+
+  const user = await findUserByEmail(data.user.email);
+
+  if (!user) {
+    notFound();
+  }
+
+  if (!user.currentOrg) {
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        currentOrg: orgId,
+      },
+    });
+  }
+
+  if (user.currentOrg !== orgId) {
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        currentOrg: orgId,
+      },
+    });
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />

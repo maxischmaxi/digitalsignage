@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { findUserByEmail, prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 
 type Props = {
@@ -19,11 +19,7 @@ export default async function Page({ params }: Props) {
     notFound();
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: data.user.email,
-    },
-  });
+  const user = await findUserByEmail(data.user.email);
 
   if (!user) {
     notFound();

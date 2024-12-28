@@ -1,0 +1,52 @@
+.timeline-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  @apply border-t;
+}
+
+.timeline-sidebar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 300px;
+  flex-shrink: 0;
+  @apply border-r;
+}
+
+.timeline-sidebar-item {
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  padding-inline: 1rem;
+  @apply border-b text-sm;
+}
+
+.timeline-content {
+  position: relative;
+  overflow-x: scroll;
+  flex-grow: 1;
+  white-space: nowrap;
+  @apply bg-sidebar;
+}
+
+.timeline-row {
+  position: relative;
+  height: 50px;
+  @apply border-b;
+}
+
+.timeline-event {
+  position: absolute;
+  top: 20px;
+  height: 40px;
+  background-color: #00bfff;
+  border-radius: 4px;
+  color: #fff;
+  text-align: center;
+  line-height: 40px;
+  overflow: hidden;
+  white-space: normal;
+}

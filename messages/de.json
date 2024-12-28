@@ -1,19 +1,63 @@
 {
+  "Layouts": {
+    "createLayout": "Layout erstellen",
+    "timeframes": "Zeitrahmen",
+    "preview": "Vorschau",
+    "layoutNotFound": "Layout nicht gefunden",
+    "layoutNotFoundDescription": "Das Layout konnte nicht gefunden werden. Bitte überprüfen Sie die URL und versuchen Sie es erneut.",
+    "layoutDescription": "Das ist das Layout mit dem Namen {name}."
+  },
+  "LayoutEditor": {
+    "preview": "Vorschau",
+    "displays": "Displays",
+    "elements": "Elemente",
+    "addRectangle": "Rechteck hinzufügen",
+    "addTriangle": "Dreieck hinzufügen"
+  },
   "PickOrgModal": {
     "title": "Organisation auswählen",
     "description": "Bitte wählen Sie eine Organisation aus, um fortzufahren."
   },
-  "NavBreadcrumbs": {
+  "Displays": {
+    "name": "Name",
+    "tableTitle": "Eine Tabelle mit allen Displays",
+    "location": "Standort"
+  },
+  "Locations": {
+    "tableTitle": "Eine Tabelle mit allen Standorten",
+    "name": "Name",
+    "actions": "Aktionen",
+    "description": "Beschreibung"
+  },
+  "Nav": {
     "signage": "Signage",
     "displays": "Displays",
     "layouts": "Layouts",
     "timeline": "Timeline",
     "images": "Bilder",
     "gallery": "Galerie",
-    "home": "Startseite"
+    "home": "Startseite",
+    "media": "Medien",
+    "platform": "Plattform",
+    "documentation": "Dokumentation",
+    "locations": "Standorte",
+    "createLayout": "Layout erstellen",
+    "timeframes": "Zeitrahmen"
   },
   "OrgSwitcher": {
     "addOrganization": "Organisation hinzufügen",
     "organization": "Organisation"
-  }
+  },
+  "Media": {
+    "tableTitle": "Eine Tabelle mit allen Medien",
+    "size": "Größe",
+    "name": "Name"
+  },
+  "Timeline": {
+    "start": "Start",
+    "end": "Ende",
+    "create": "Erstellen"
+  },
+  "actions": "Aktionen",
+  "pickADate": "Wählen Sie ein Datum"
 }

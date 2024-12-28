@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth";
-import { debug } from "@/lib/debug";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -43,8 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     });
 
     return NextResponse.json(org);
-  } catch (error) {
-    debug(error);
+  } catch {
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 },

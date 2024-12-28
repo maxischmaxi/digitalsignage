@@ -17,9 +17,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Org } from "@prisma/client";
 import { useParams } from "next/navigation";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
 import { useOrgs } from "@/hooks/use-orgs";
 import { useTranslations } from "next-intl";
 
@@ -28,22 +27,13 @@ export function OrgSwitcher() {
   const { isMobile } = useSidebar();
   const orgs = useOrgs();
   const pathname = usePathname();
-  const router = useRouter();
   const t = useTranslations("OrgSwitcher");
 
   const org = orgs.data?.find((org) => org.id === orgId);
 
   const ActiveOrgIcon = icons[(org?.icon ?? "House") as keyof typeof icons];
 
-  async function setOrg(org: Org) {
-    if (org.id === orgId) {
-      return;
-    }
-
-    const split = pathname.split("/").filter(Boolean);
-    split[0] = org.id;
-    router.push(split.join("/"));
-  }
+  const actualPath = pathname.split("/").filter(Boolean).slice(1).join("/");
 
   return (
     <SidebarMenu>
@@ -59,7 +49,7 @@ export function OrgSwitcher() {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{org?.name}</span>
-                <span className="truncate text-xs">{org?.plan}</span>
+                <span className="truncate text-xs">{org?.Plan}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -73,30 +63,32 @@ export function OrgSwitcher() {
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               {t("organization")}
             </DropdownMenuLabel>
-            {orgs.data?.map((org) => {
-              const Icon = icons["House"];
+            {orgs.data
+              ?.filter((org) => org.id !== orgId)
+              .map((org) => {
+                const Icon = icons["House"];
 
-              return (
-                <DropdownMenuItem
-                  key={org.id}
-                  onClick={() => setOrg(org)}
-                  className="gap-2 p-2"
-                >
-                  <div className="flex size-6 items-center justify-center rounded-sm border">
-                    <Icon className="size-4" />
-                  </div>
-                  {org.name}
-                </DropdownMenuItem>
-              );
-            })}
+                return (
+                  <DropdownMenuItem key={org.id} className="gap-2 p-2" asChild>
+                    <Link href={`/${org.id}/${actualPath}`}>
+                      <div className="flex size-6 items-center justify-center rounded-sm border">
+                        <Icon className="size-4" />
+                      </div>
+                      {org.name}
+                    </Link>
+                  </DropdownMenuItem>
+                );
+              })}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <Plus className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">
-                {t("addOrganization")}
-              </div>
+            <DropdownMenuItem className="gap-2 p-2" asChild>
+              <Link href="/create-org">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                  <Plus className="size-4" />
+                </div>
+                <div className="font-medium text-muted-foreground">
+                  {t("addOrganization")}
+                </div>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
